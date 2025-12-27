@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCRUM Board</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="board-container">
+        <header class="board-header">
+            <h1>SCRUM Board</h1>
+        </header>
+
+        <div class="board">
+            <div class="column" data-status="todo">
+                <div class="column-header">
+                    <h2>Need to Do</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-status="todo"></div>
+                <button class="add-card-btn" data-status="todo">+ Add Card</button>
+            </div>
+
+            <div class="column" data-status="doing">
+                <div class="column-header">
+                    <h2>Doing</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-status="doing"></div>
+                <button class="add-card-btn" data-status="doing">+ Add Card</button>
+            </div>
+
+            <div class="column" data-status="done">
+                <div class="column-header">
+                    <h2>Done</h2>
+                    <span class="card-count">0</span>
+                </div>
+                <div class="cards-container" data-status="done"></div>
+                <button class="add-card-btn" data-status="done">+ Add Card</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing cards -->
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Card</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="cardTitle">Title</label>
+                    <input type="text" id="cardTitle" placeholder="Enter card title..." maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="cardDescription">Description (optional)</label>
+                    <textarea id="cardDescription" placeholder="Enter description..." rows="3" maxlength="500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cardPriority">Priority</label>
+                    <select id="cardPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveCardBtn">Save Card</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Delete Card</h3>
+                <button class="close-btn" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this card?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
