@@ -32,10 +32,12 @@ class ScrumBoard {
         this.modalTitle = document.getElementById('modalTitle');
         this.cardTitleInput = document.getElementById('cardTitle');
         this.cardDescriptionInput = document.getElementById('cardDescription');
-        this.cardPrioritySelect = document.getElementById('cardPriority');
+        this.colorPicker = document.getElementById('colorPicker');
+        this.colorOptions = document.querySelectorAll('.color-option');
         this.saveCardBtn = document.getElementById('saveCardBtn');
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
+        this.selectedColor = 'gray';
 
         // Delete Modal
         this.deleteModal = document.getElementById('deleteModal');
@@ -63,6 +65,15 @@ class ScrumBoard {
         this.cancelBtn.addEventListener('click', () => this.closeCardModal());
         this.cardModal.addEventListener('click', (e) => {
             if (e.target === this.cardModal) this.closeCardModal();
+        });
+
+        // Color picker events
+        this.colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                this.colorOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                this.selectedColor = option.dataset.color;
+            });
         });
 
         // Delete modal events
@@ -106,17 +117,24 @@ class ScrumBoard {
                 this.modalTitle.textContent = 'Edit Card';
                 this.cardTitleInput.value = card.title;
                 this.cardDescriptionInput.value = card.description || '';
-                this.cardPrioritySelect.value = card.priority;
+                this.setSelectedColor(card.color || 'gray');
             }
         } else {
             this.modalTitle.textContent = 'Add New Card';
             this.cardTitleInput.value = '';
             this.cardDescriptionInput.value = '';
-            this.cardPrioritySelect.value = 'medium';
+            this.setSelectedColor('gray');
         }
 
         this.cardModal.classList.add('active');
         setTimeout(() => this.cardTitleInput.focus(), 100);
+    }
+
+    setSelectedColor(color) {
+        this.selectedColor = color;
+        this.colorOptions.forEach(option => {
+            option.classList.toggle('selected', option.dataset.color === color);
+        });
     }
 
     closeCardModal() {
@@ -135,7 +153,7 @@ class ScrumBoard {
         const cardData = {
             title,
             description: this.cardDescriptionInput.value.trim(),
-            priority: this.cardPrioritySelect.value
+            color: this.selectedColor
         };
 
         if (this.editMode && this.currentCardId) {
@@ -164,7 +182,7 @@ class ScrumBoard {
             id: this.generateId(),
             title: cardData.title,
             description: cardData.description,
-            priority: cardData.priority,
+            color: cardData.color,
             status: this.currentStatus,
             createdAt: Date.now()
         };
@@ -231,7 +249,8 @@ class ScrumBoard {
 
     createCardElement(card, isNew = false) {
         const cardDiv = document.createElement('div');
-        cardDiv.className = `card priority-${card.priority}${isNew ? ' new' : ''}`;
+        const cardColor = card.color || 'gray';
+        cardDiv.className = `card color-${cardColor}${isNew ? ' new' : ''}`;
         cardDiv.dataset.cardId = card.id;
         cardDiv.draggable = true;
 
@@ -239,7 +258,7 @@ class ScrumBoard {
             <div class="card-title">${this.escapeHtml(card.title)}</div>
             ${card.description ? `<div class="card-description">${this.escapeHtml(card.description)}</div>` : ''}
             <div class="card-footer">
-                <span class="card-priority priority-${card.priority}">${card.priority}</span>
+                <span class="card-color-dot color-${cardColor}"></span>
                 <div class="card-actions">
                     <button class="edit-btn" title="Edit">&#9998;</button>
                     <button class="delete-btn" title="Delete">&#10005;</button>

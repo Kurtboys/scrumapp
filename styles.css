@@ -6,23 +6,33 @@
 }
 
 :root {
-    --bg-primary: #f5f6f8;
-    --bg-secondary: #ffffff;
-    --bg-column: #f0f2f5;
-    --text-primary: #1a1a2e;
-    --text-secondary: #6b7280;
-    --border-color: #e5e7eb;
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-column: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --border-color: #30363d;
     --accent-color: #6366f1;
-    --accent-hover: #4f46e5;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --accent-hover: #818cf8;
+    --success-color: #3fb950;
+    --warning-color: #d29922;
+    --danger-color: #f85149;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
+
+    /* Card colors for project coding */
+    --card-gray: #30363d;
+    --card-red: #f85149;
+    --card-orange: #db6d28;
+    --card-yellow: #d29922;
+    --card-green: #3fb950;
+    --card-blue: #58a6ff;
+    --card-purple: #a371f7;
+    --card-pink: #db61a2;
 }
 
 body {
@@ -157,17 +167,6 @@ body {
     transform: rotate(3deg);
 }
 
-.card.priority-low {
-    border-left-color: var(--success-color);
-}
-
-.card.priority-medium {
-    border-left-color: var(--warning-color);
-}
-
-.card.priority-high {
-    border-left-color: var(--danger-color);
-}
 
 .card-title {
     font-size: 0.9rem;
@@ -190,29 +189,6 @@ body {
     justify-content: space-between;
 }
 
-.card-priority {
-    font-size: 0.7rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.card-priority.priority-low {
-    background-color: rgba(16, 185, 129, 0.1);
-    color: var(--success-color);
-}
-
-.card-priority.priority-medium {
-    background-color: rgba(245, 158, 11, 0.1);
-    color: var(--warning-color);
-}
-
-.card-priority.priority-high {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-}
 
 .card-actions {
     display: flex;
@@ -237,13 +213,86 @@ body {
 }
 
 .card-actions button:hover {
-    background-color: var(--bg-column);
+    background-color: var(--border-color);
     color: var(--text-primary);
 }
 
 .card-actions .delete-btn:hover {
     color: var(--danger-color);
 }
+
+/* Card Color Indicator */
+.card-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.card-color-dot.color-gray { background-color: var(--card-gray); }
+.card-color-dot.color-red { background-color: var(--card-red); }
+.card-color-dot.color-orange { background-color: var(--card-orange); }
+.card-color-dot.color-yellow { background-color: var(--card-yellow); }
+.card-color-dot.color-green { background-color: var(--card-green); }
+.card-color-dot.color-blue { background-color: var(--card-blue); }
+.card-color-dot.color-purple { background-color: var(--card-purple); }
+.card-color-dot.color-pink { background-color: var(--card-pink); }
+
+/* Card with color stripe */
+.card.color-gray { border-left-color: var(--card-gray); }
+.card.color-red { border-left-color: var(--card-red); }
+.card.color-orange { border-left-color: var(--card-orange); }
+.card.color-yellow { border-left-color: var(--card-yellow); }
+.card.color-green { border-left-color: var(--card-green); }
+.card.color-blue { border-left-color: var(--card-blue); }
+.card.color-purple { border-left-color: var(--card-purple); }
+.card.color-pink { border-left-color: var(--card-pink); }
+
+/* Color Picker in Modal */
+.color-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: var(--text-primary);
+}
+
+.color-option.selected::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+}
+
+.color-option.color-gray { background-color: var(--card-gray); }
+.color-option.color-red { background-color: var(--card-red); }
+.color-option.color-orange { background-color: var(--card-orange); }
+.color-option.color-yellow { background-color: var(--card-yellow); }
+.color-option.color-green { background-color: var(--card-green); }
+.color-option.color-blue { background-color: var(--card-blue); }
+.color-option.color-purple { background-color: var(--card-purple); }
+.color-option.color-pink { background-color: var(--card-pink); }
 
 /* Add Card Button */
 .add-card-btn {

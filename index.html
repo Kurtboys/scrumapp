@@ -59,12 +59,17 @@
                     <textarea id="cardDescription" placeholder="Enter description..." rows="3" maxlength="500"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="cardPriority">Priority</label>
-                    <select id="cardPriority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
+                    <label>Color (for project coding)</label>
+                    <div class="color-picker" id="colorPicker">
+                        <div class="color-option color-gray selected" data-color="gray" title="Gray"></div>
+                        <div class="color-option color-red" data-color="red" title="Red"></div>
+                        <div class="color-option color-orange" data-color="orange" title="Orange"></div>
+                        <div class="color-option color-yellow" data-color="yellow" title="Yellow"></div>
+                        <div class="color-option color-green" data-color="green" title="Green"></div>
+                        <div class="color-option color-blue" data-color="blue" title="Blue"></div>
+                        <div class="color-option color-purple" data-color="purple" title="Purple"></div>
+                        <div class="color-option color-pink" data-color="pink" title="Pink"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
