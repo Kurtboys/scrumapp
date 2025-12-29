@@ -76,6 +76,17 @@ class ScrumBoard {
                 this.colorOptions.forEach(o => o.classList.remove('selected'));
                 option.classList.add('selected');
                 this.selectedColor = option.dataset.color;
+
+                // Auto-save if editing an existing card
+                if (this.editMode && this.currentCardId) {
+                    const card = this.cards.find(c => c.id === this.currentCardId);
+                    if (card) {
+                        card.color = this.selectedColor;
+                        card.updatedAt = Date.now();
+                        this.saveCards();
+                        this.rerenderCard(this.currentCardId);
+                    }
+                }
             });
         });
 
@@ -86,6 +97,21 @@ class ScrumBoard {
                 option.classList.add('selected');
                 const val = option.dataset.priority;
                 this.selectedPriority = val ? parseInt(val, 10) : null;
+
+                // Auto-save if editing an existing card
+                if (this.editMode && this.currentCardId) {
+                    const card = this.cards.find(c => c.id === this.currentCardId);
+                    if (card) {
+                        card.priority = this.selectedPriority;
+                        card.updatedAt = Date.now();
+                        this.saveCards();
+                        if (card.status === 'todo') {
+                            this.renderTodoColumn();
+                        } else {
+                            this.rerenderCard(this.currentCardId);
+                        }
+                    }
+                }
             });
         });
 
