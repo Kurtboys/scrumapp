@@ -24,15 +24,27 @@
     --radius-md: 8px;
     --radius-lg: 12px;
 
-    /* Card colors for project coding */
-    --card-gray: #30363d;
+    /* Card colors for project coding (20 colors) */
+    --card-gray: #6e7681;
     --card-red: #f85149;
     --card-orange: #db6d28;
-    --card-yellow: #d29922;
+    --card-amber: #d29922;
+    --card-yellow: #e3b341;
+    --card-lime: #a4e400;
     --card-green: #3fb950;
+    --card-emerald: #2dd4bf;
+    --card-teal: #14b8a6;
+    --card-cyan: #22d3ee;
+    --card-sky: #38bdf8;
     --card-blue: #58a6ff;
+    --card-indigo: #818cf8;
     --card-purple: #a371f7;
-    --card-pink: #db61a2;
+    --card-violet: #c084fc;
+    --card-fuchsia: #e879f9;
+    --card-pink: #f472b6;
+    --card-rose: #fb7185;
+    --card-brown: #a78a6d;
+    --card-slate: #94a3b8;
 }
 
 body {
@@ -251,21 +263,45 @@ body {
 .card-color-dot.color-gray { background-color: var(--card-gray); }
 .card-color-dot.color-red { background-color: var(--card-red); }
 .card-color-dot.color-orange { background-color: var(--card-orange); }
+.card-color-dot.color-amber { background-color: var(--card-amber); }
 .card-color-dot.color-yellow { background-color: var(--card-yellow); }
+.card-color-dot.color-lime { background-color: var(--card-lime); }
 .card-color-dot.color-green { background-color: var(--card-green); }
+.card-color-dot.color-emerald { background-color: var(--card-emerald); }
+.card-color-dot.color-teal { background-color: var(--card-teal); }
+.card-color-dot.color-cyan { background-color: var(--card-cyan); }
+.card-color-dot.color-sky { background-color: var(--card-sky); }
 .card-color-dot.color-blue { background-color: var(--card-blue); }
+.card-color-dot.color-indigo { background-color: var(--card-indigo); }
 .card-color-dot.color-purple { background-color: var(--card-purple); }
+.card-color-dot.color-violet { background-color: var(--card-violet); }
+.card-color-dot.color-fuchsia { background-color: var(--card-fuchsia); }
 .card-color-dot.color-pink { background-color: var(--card-pink); }
+.card-color-dot.color-rose { background-color: var(--card-rose); }
+.card-color-dot.color-brown { background-color: var(--card-brown); }
+.card-color-dot.color-slate { background-color: var(--card-slate); }
 
 /* Card with color stripe */
 .card.color-gray { border-left-color: var(--card-gray); }
 .card.color-red { border-left-color: var(--card-red); }
 .card.color-orange { border-left-color: var(--card-orange); }
+.card.color-amber { border-left-color: var(--card-amber); }
 .card.color-yellow { border-left-color: var(--card-yellow); }
+.card.color-lime { border-left-color: var(--card-lime); }
 .card.color-green { border-left-color: var(--card-green); }
+.card.color-emerald { border-left-color: var(--card-emerald); }
+.card.color-teal { border-left-color: var(--card-teal); }
+.card.color-cyan { border-left-color: var(--card-cyan); }
+.card.color-sky { border-left-color: var(--card-sky); }
 .card.color-blue { border-left-color: var(--card-blue); }
+.card.color-indigo { border-left-color: var(--card-indigo); }
 .card.color-purple { border-left-color: var(--card-purple); }
+.card.color-violet { border-left-color: var(--card-violet); }
+.card.color-fuchsia { border-left-color: var(--card-fuchsia); }
 .card.color-pink { border-left-color: var(--card-pink); }
+.card.color-rose { border-left-color: var(--card-rose); }
+.card.color-brown { border-left-color: var(--card-brown); }
+.card.color-slate { border-left-color: var(--card-slate); }
 
 /* Color Picker in Modal */
 .color-picker {
@@ -307,11 +343,23 @@ body {
 .color-option.color-gray { background-color: var(--card-gray); }
 .color-option.color-red { background-color: var(--card-red); }
 .color-option.color-orange { background-color: var(--card-orange); }
+.color-option.color-amber { background-color: var(--card-amber); }
 .color-option.color-yellow { background-color: var(--card-yellow); }
+.color-option.color-lime { background-color: var(--card-lime); }
 .color-option.color-green { background-color: var(--card-green); }
+.color-option.color-emerald { background-color: var(--card-emerald); }
+.color-option.color-teal { background-color: var(--card-teal); }
+.color-option.color-cyan { background-color: var(--card-cyan); }
+.color-option.color-sky { background-color: var(--card-sky); }
 .color-option.color-blue { background-color: var(--card-blue); }
+.color-option.color-indigo { background-color: var(--card-indigo); }
 .color-option.color-purple { background-color: var(--card-purple); }
+.color-option.color-violet { background-color: var(--card-violet); }
+.color-option.color-fuchsia { background-color: var(--card-fuchsia); }
 .color-option.color-pink { background-color: var(--card-pink); }
+.color-option.color-rose { background-color: var(--card-rose); }
+.color-option.color-brown { background-color: var(--card-brown); }
+.color-option.color-slate { background-color: var(--card-slate); }
 
 /* Add Card Button */
 .add-card-btn {
