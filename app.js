@@ -34,6 +34,7 @@ class ScrumBoard {
         this.cardDescriptionInput = document.getElementById('cardDescription');
         this.colorPicker = document.getElementById('colorPicker');
         this.colorOptions = document.querySelectorAll('.color-option');
+        this.cardPriorityInput = document.getElementById('cardPriority');
         this.saveCardBtn = document.getElementById('saveCardBtn');
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
@@ -118,12 +119,14 @@ class ScrumBoard {
                 this.cardTitleInput.value = card.title;
                 this.cardDescriptionInput.value = card.description || '';
                 this.setSelectedColor(card.color || 'gray');
+                this.cardPriorityInput.value = card.priority || '';
             }
         } else {
             this.modalTitle.textContent = 'Add New Card';
             this.cardTitleInput.value = '';
             this.cardDescriptionInput.value = '';
             this.setSelectedColor('gray');
+            this.cardPriorityInput.value = '';
         }
 
         this.cardModal.classList.add('active');
@@ -150,10 +153,14 @@ class ScrumBoard {
             return;
         }
 
+        const priorityValue = this.cardPriorityInput.value.trim();
+        const priority = priorityValue ? parseInt(priorityValue, 10) : null;
+
         const cardData = {
             title,
             description: this.cardDescriptionInput.value.trim(),
-            color: this.selectedColor
+            color: this.selectedColor,
+            priority: priority
         };
 
         if (this.editMode && this.currentCardId) {
@@ -183,26 +190,40 @@ class ScrumBoard {
             title: cardData.title,
             description: cardData.description,
             color: cardData.color,
+            priority: cardData.priority,
             status: this.currentStatus,
             createdAt: Date.now()
         };
 
         this.cards.push(card);
         this.saveCards();
-        this.renderCard(card, true);
+
+        // Re-render the todo column to maintain sort order
+        if (card.status === 'todo' && card.priority) {
+            this.renderTodoColumn();
+        } else {
+            this.renderCard(card, true);
+        }
         this.updateCount(card.status);
     }
 
     updateCard(cardId, cardData) {
         const cardIndex = this.cards.findIndex(c => c.id === cardId);
         if (cardIndex !== -1) {
+            const oldCard = this.cards[cardIndex];
             this.cards[cardIndex] = {
-                ...this.cards[cardIndex],
+                ...oldCard,
                 ...cardData,
                 updatedAt: Date.now()
             };
             this.saveCards();
-            this.rerenderCard(cardId);
+
+            // Re-render todo column if priority changed
+            if (oldCard.status === 'todo') {
+                this.renderTodoColumn();
+            } else {
+                this.rerenderCard(cardId);
+            }
         }
     }
 
@@ -235,6 +256,11 @@ class ScrumBoard {
             this.saveCards();
             this.updateCount(oldStatus);
             this.updateCount(newStatus);
+
+            // Re-render todo column if card moved to it (to maintain priority sort)
+            if (newStatus === 'todo') {
+                this.renderTodoColumn();
+            }
         }
     }
 
@@ -254,8 +280,13 @@ class ScrumBoard {
         cardDiv.dataset.cardId = card.id;
         cardDiv.draggable = true;
 
+        const priorityBadge = card.priority ? `<span class="card-priority-badge">P${card.priority}</span>` : '';
+
         cardDiv.innerHTML = `
-            <div class="card-title">${this.escapeHtml(card.title)}</div>
+            <div class="card-header">
+                <div class="card-title">${this.escapeHtml(card.title)}</div>
+                ${priorityBadge}
+            </div>
             ${card.description ? `<div class="card-description">${this.escapeHtml(card.description)}</div>` : ''}
             <div class="card-footer">
                 <span class="card-color-dot color-${cardColor}"></span>
@@ -304,11 +335,46 @@ class ScrumBoard {
             container.innerHTML = '';
         });
 
-        // Sort cards by creation date (newest first)
-        const sortedCards = [...this.cards].sort((a, b) => b.createdAt - a.createdAt);
+        // Separate cards by status
+        const todoCards = this.cards.filter(c => c.status === 'todo');
+        const otherCards = this.cards.filter(c => c.status !== 'todo');
 
-        // Render each card
+        // Sort todo cards by priority (1 first), then by creation date
+        const sortedTodoCards = this.sortByPriority(todoCards);
+
+        // Sort other cards by creation date (newest first)
+        const sortedOtherCards = [...otherCards].sort((a, b) => b.createdAt - a.createdAt);
+
+        // Render todo cards
+        sortedTodoCards.forEach(card => this.renderCard(card));
+
+        // Render other cards
+        sortedOtherCards.forEach(card => this.renderCard(card));
+    }
+
+    renderTodoColumn() {
+        // Clear and re-render only the todo column
+        this.containers.todo.innerHTML = '';
+        const todoCards = this.cards.filter(c => c.status === 'todo');
+        const sortedCards = this.sortByPriority(todoCards);
         sortedCards.forEach(card => this.renderCard(card));
+    }
+
+    sortByPriority(cards) {
+        return [...cards].sort((a, b) => {
+            // Cards with priority come first, sorted by priority number (1 is highest)
+            // Cards without priority come after, sorted by creation date
+            if (a.priority && b.priority) {
+                return a.priority - b.priority;
+            }
+            if (a.priority && !b.priority) {
+                return -1;
+            }
+            if (!a.priority && b.priority) {
+                return 1;
+            }
+            return b.createdAt - a.createdAt;
+        });
     }
 
     // Drag and Drop Handlers
