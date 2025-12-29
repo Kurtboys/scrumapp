@@ -221,34 +221,20 @@ body {
 }
 
 
-.card-actions {
-    display: flex;
-    gap: 4px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.card:hover .card-actions {
-    opacity: 1;
-}
-
-.card-actions button {
+.delete-btn {
     background: none;
     border: none;
-    padding: 4px;
+    padding: 4px 6px;
     cursor: pointer;
     color: var(--text-secondary);
     border-radius: 4px;
     transition: all 0.15s ease;
-    font-size: 0.85rem;
+    font-size: 1rem;
+    line-height: 1;
 }
 
-.card-actions button:hover {
-    background-color: var(--border-color);
-    color: var(--text-primary);
-}
-
-.card-actions .delete-btn:hover {
+.delete-btn:hover {
+    background-color: rgba(248, 81, 73, 0.15);
     color: var(--danger-color);
 }
 

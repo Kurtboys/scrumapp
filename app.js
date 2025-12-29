@@ -290,10 +290,7 @@ class ScrumBoard {
             ${card.description ? `<div class="card-description">${this.escapeHtml(card.description)}</div>` : ''}
             <div class="card-footer">
                 <span class="card-color-dot color-${cardColor}"></span>
-                <div class="card-actions">
-                    <button class="edit-btn" title="Edit">&#9998;</button>
-                    <button class="delete-btn" title="Delete">&#10005;</button>
-                </div>
+                <button class="delete-btn" title="Delete">&#128465;</button>
             </div>
         `;
 
@@ -301,14 +298,15 @@ class ScrumBoard {
         cardDiv.addEventListener('dragstart', (e) => this.handleDragStart(e, card.id));
         cardDiv.addEventListener('dragend', (e) => this.handleDragEnd(e));
 
-        const editBtn = cardDiv.querySelector('.edit-btn');
-        const deleteBtn = cardDiv.querySelector('.delete-btn');
-
-        editBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.currentStatus = card.status;
-            this.openCardModal(card.id);
+        // Click on card to edit
+        cardDiv.addEventListener('click', (e) => {
+            if (!e.target.closest('.delete-btn')) {
+                this.currentStatus = card.status;
+                this.openCardModal(card.id);
+            }
         });
+
+        const deleteBtn = cardDiv.querySelector('.delete-btn');
 
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
