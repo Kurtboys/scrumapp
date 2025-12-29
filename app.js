@@ -34,11 +34,13 @@ class ScrumBoard {
         this.cardDescriptionInput = document.getElementById('cardDescription');
         this.colorPicker = document.getElementById('colorPicker');
         this.colorOptions = document.querySelectorAll('.color-option');
-        this.cardPriorityInput = document.getElementById('cardPriority');
+        this.priorityPicker = document.getElementById('priorityPicker');
+        this.priorityOptions = document.querySelectorAll('.priority-option');
         this.saveCardBtn = document.getElementById('saveCardBtn');
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
         this.selectedColor = 'gray';
+        this.selectedPriority = null;
 
         // Delete Modal
         this.deleteModal = document.getElementById('deleteModal');
@@ -74,6 +76,16 @@ class ScrumBoard {
                 this.colorOptions.forEach(o => o.classList.remove('selected'));
                 option.classList.add('selected');
                 this.selectedColor = option.dataset.color;
+            });
+        });
+
+        // Priority picker events
+        this.priorityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                this.priorityOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                const val = option.dataset.priority;
+                this.selectedPriority = val ? parseInt(val, 10) : null;
             });
         });
 
@@ -119,14 +131,14 @@ class ScrumBoard {
                 this.cardTitleInput.value = card.title;
                 this.cardDescriptionInput.value = card.description || '';
                 this.setSelectedColor(card.color || 'gray');
-                this.cardPriorityInput.value = card.priority || '';
+                this.setSelectedPriority(card.priority || null);
             }
         } else {
             this.modalTitle.textContent = 'Add New Card';
             this.cardTitleInput.value = '';
             this.cardDescriptionInput.value = '';
             this.setSelectedColor('gray');
-            this.cardPriorityInput.value = '';
+            this.setSelectedPriority(null);
         }
 
         this.cardModal.classList.add('active');
@@ -137,6 +149,14 @@ class ScrumBoard {
         this.selectedColor = color;
         this.colorOptions.forEach(option => {
             option.classList.toggle('selected', option.dataset.color === color);
+        });
+    }
+
+    setSelectedPriority(priority) {
+        this.selectedPriority = priority;
+        this.priorityOptions.forEach(option => {
+            const optionPriority = option.dataset.priority ? parseInt(option.dataset.priority, 10) : null;
+            option.classList.toggle('selected', optionPriority === priority);
         });
     }
 
@@ -153,14 +173,11 @@ class ScrumBoard {
             return;
         }
 
-        const priorityValue = this.cardPriorityInput.value.trim();
-        const priority = priorityValue ? parseInt(priorityValue, 10) : null;
-
         const cardData = {
             title,
             description: this.cardDescriptionInput.value.trim(),
             color: this.selectedColor,
-            priority: priority
+            priority: this.selectedPriority
         };
 
         if (this.editMode && this.currentCardId) {
