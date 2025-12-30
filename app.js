@@ -3,6 +3,7 @@
 class ScrumBoard {
     constructor() {
         this.cards = this.loadCards();
+        this.recurringTemplates = this.loadRecurringTemplates();
         this.currentCardId = null;
         this.editMode = false;
         this.currentStatus = 'todo';
@@ -14,6 +15,7 @@ class ScrumBoard {
     init() {
         this.cacheDOM();
         this.bindEvents();
+        this.checkRecurringCards();
         this.renderAllCards();
         this.updateAllCounts();
     }
@@ -36,6 +38,7 @@ class ScrumBoard {
         this.colorOptions = document.querySelectorAll('.color-option');
         this.priorityPicker = document.getElementById('priorityPicker');
         this.priorityOptions = document.querySelectorAll('.priority-option');
+        this.recurringCheckbox = document.getElementById('cardRecurring');
         this.saveCardBtn = document.getElementById('saveCardBtn');
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
@@ -158,6 +161,7 @@ class ScrumBoard {
                 this.cardDescriptionInput.value = card.description || '';
                 this.setSelectedColor(card.color || 'gray');
                 this.setSelectedPriority(card.priority || null);
+                this.recurringCheckbox.checked = card.recurring || false;
             }
         } else {
             this.modalTitle.textContent = 'Add New Card';
@@ -165,6 +169,7 @@ class ScrumBoard {
             this.cardDescriptionInput.value = '';
             this.setSelectedColor('gray');
             this.setSelectedPriority(null);
+            this.recurringCheckbox.checked = false;
         }
 
         this.cardModal.classList.add('active');
@@ -203,7 +208,8 @@ class ScrumBoard {
             title,
             description: this.cardDescriptionInput.value.trim(),
             color: this.selectedColor,
-            priority: this.selectedPriority
+            priority: this.selectedPriority,
+            recurring: this.recurringCheckbox.checked
         };
 
         if (this.editMode && this.currentCardId) {
@@ -234,12 +240,18 @@ class ScrumBoard {
             description: cardData.description,
             color: cardData.color,
             priority: cardData.priority,
+            recurring: cardData.recurring,
             status: this.currentStatus,
             createdAt: Date.now()
         };
 
         this.cards.push(card);
         this.saveCards();
+
+        // Manage recurring template
+        if (cardData.recurring) {
+            this.addRecurringTemplate(card);
+        }
 
         // Re-render the todo column to maintain sort order
         if (card.status === 'todo' && card.priority) {
@@ -261,6 +273,15 @@ class ScrumBoard {
             };
             this.saveCards();
 
+            // Manage recurring template
+            if (cardData.recurring && !oldCard.recurring) {
+                this.addRecurringTemplate(this.cards[cardIndex]);
+            } else if (!cardData.recurring && oldCard.recurring) {
+                this.removeRecurringTemplate(cardId);
+            } else if (cardData.recurring) {
+                this.updateRecurringTemplate(this.cards[cardIndex]);
+            }
+
             // Re-render todo column if priority changed
             if (oldCard.status === 'todo') {
                 this.renderTodoColumn();
@@ -276,6 +297,12 @@ class ScrumBoard {
         const card = this.cards.find(c => c.id === this.currentCardId);
         if (card) {
             const status = card.status;
+
+            // Remove recurring template if card was recurring
+            if (card.recurring) {
+                this.removeRecurringTemplate(this.currentCardId);
+            }
+
             this.cards = this.cards.filter(c => c.id !== this.currentCardId);
             this.saveCards();
 
@@ -324,11 +351,15 @@ class ScrumBoard {
         cardDiv.draggable = true;
 
         const priorityBadge = card.priority ? `<span class="card-priority-badge">P${card.priority}</span>` : '';
+        const recurringBadge = card.recurring ? `<span class="card-recurring-badge" title="Recurring daily">&#8635;</span>` : '';
 
         cardDiv.innerHTML = `
             <div class="card-header">
                 <div class="card-title">${this.escapeHtml(card.title)}</div>
-                ${priorityBadge}
+                <div class="card-badges">
+                    ${recurringBadge}
+                    ${priorityBadge}
+                </div>
             </div>
             ${card.description ? `<div class="card-description">${this.escapeHtml(card.description)}</div>` : ''}
             <div class="card-footer">
@@ -484,6 +515,105 @@ class ScrumBoard {
 
     updateAllCounts() {
         ['todo', 'doing', 'done'].forEach(status => this.updateCount(status));
+    }
+
+    // Recurring Card Methods
+    loadRecurringTemplates() {
+        try {
+            const stored = localStorage.getItem('scrumboard_recurring');
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading recurring templates:', e);
+            return [];
+        }
+    }
+
+    saveRecurringTemplates() {
+        try {
+            localStorage.setItem('scrumboard_recurring', JSON.stringify(this.recurringTemplates));
+        } catch (e) {
+            console.error('Error saving recurring templates:', e);
+        }
+    }
+
+    addRecurringTemplate(card) {
+        const template = {
+            templateId: card.id,
+            title: card.title,
+            description: card.description,
+            color: card.color,
+            priority: card.priority
+        };
+        // Check if template already exists
+        const existingIndex = this.recurringTemplates.findIndex(t => t.templateId === card.id);
+        if (existingIndex === -1) {
+            this.recurringTemplates.push(template);
+        } else {
+            this.recurringTemplates[existingIndex] = template;
+        }
+        this.saveRecurringTemplates();
+    }
+
+    updateRecurringTemplate(card) {
+        const index = this.recurringTemplates.findIndex(t => t.templateId === card.id);
+        if (index !== -1) {
+            this.recurringTemplates[index] = {
+                templateId: card.id,
+                title: card.title,
+                description: card.description,
+                color: card.color,
+                priority: card.priority
+            };
+            this.saveRecurringTemplates();
+        }
+    }
+
+    removeRecurringTemplate(cardId) {
+        this.recurringTemplates = this.recurringTemplates.filter(t => t.templateId !== cardId);
+        this.saveRecurringTemplates();
+    }
+
+    checkRecurringCards() {
+        if (this.recurringTemplates.length === 0) return;
+
+        const now = new Date();
+        // Convert to PST (UTC-8)
+        const pstOffset = -8 * 60;
+        const localOffset = now.getTimezoneOffset();
+        const pstTime = new Date(now.getTime() + (localOffset + pstOffset) * 60000);
+
+        const today = pstTime.toISOString().split('T')[0];
+        const currentHour = pstTime.getHours();
+
+        // Only generate if it's 6 AM or later
+        if (currentHour < 6) return;
+
+        // Check last generation date
+        const lastGenerated = localStorage.getItem('scrumboard_last_recurring');
+        if (lastGenerated === today) return;
+
+        // Generate recurring cards
+        let cardsCreated = 0;
+        this.recurringTemplates.forEach(template => {
+            const card = {
+                id: this.generateId(),
+                title: template.title,
+                description: template.description,
+                color: template.color,
+                priority: template.priority,
+                recurring: true,
+                status: 'todo',
+                createdAt: Date.now(),
+                fromRecurring: true
+            };
+            this.cards.push(card);
+            cardsCreated++;
+        });
+
+        if (cardsCreated > 0) {
+            this.saveCards();
+            localStorage.setItem('scrumboard_last_recurring', today);
+        }
     }
 
     // Storage Methods
